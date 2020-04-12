@@ -1,5 +1,7 @@
 package com.cs421g29;
 
+import java.util.Date;
+
 import java.sql.* ;
 import java.sql.DriverManager;
 import java.sql.Connection;
@@ -58,7 +60,7 @@ public class DatabaseController {
         // Attempt to execute the query
         try {
             java.sql.ResultSet results = statement.executeQuery(
-                    "SELECT * from USERORDER"
+                    "SELECT * FROM userorder"
             );
 
             // Convert every returned tuple to an order object and add list
@@ -99,104 +101,46 @@ public class DatabaseController {
 
         // Attempt to execute the query
         try {
-            java.sql.ResultSet results = statement.executeQuery(
-                    "SELECT * from USERORDER"
+            String sql = String.format(
+                    "INSERT INTO userorder VALUES (%d, '%s', '%s', '%s', '%s', '%s', %.2f)",
+                    order.oid, "2020-01-01", order.paymentmethod, order.status,
+                    order.email, order.shippingaddress, order.rate
             );
+            System.out.println(sql);
+            statement.executeUpdate(sql);
+        } catch (SQLException e) {
+            if (e.getSQLState() == "23503") {
+                System.out.println("Error creating order. No valid account exists for user email.");
+            } else {
+                System.out.println("Error fetching updating orders. Error code: " + e.getErrorCode() + "  sqlState: " + e.getSQLState());
+            }
+            statement.close();
+            return false;
         }
+
+        // Return true if updated
+        statement.close();
+        return true;
     }
 
     public static void main(String[] args) throws SQLException {
         Connection conn = openConnection();
-        ArrayList<Order> allOrders = getAllOrders(conn);
-        for (Order o : allOrders) {
-            System.out.println("order: " + o.oid + " " + o.shippingaddress);
+        if (conn != null) {
+            ArrayList<Order> allOrders = getAllOrders(conn);
+            /*for (Order o : allOrders) {
+                System.out.println("order: " + o.oid + " " + o.shippingaddress);
+            }*/
+
+            addOrder(conn, new Order(
+                    222,
+                    new Date(),
+                    "Credit Card: XXXX-XXXX-XXXX-1234",
+                    "Processing",
+                    "Ali.Zemlak94@yahoo.ca",
+                    "A fake address",
+                    (float) 20.22
+            ));
+            closeConnection(conn);
         }
-
-
-        // Creating a table
-        /*try {
-            String createSQL = "CREATE TABLE " + tableName + " (id INTEGER, name VARCHAR (25)) ";
-            System.out.println (createSQL ) ;
-            statement.executeUpdate (createSQL ) ;
-            System.out.println ("DONE");
-        }catch (SQLException e)
-        {
-            sqlCode = e.getErrorCode(); // Get SQLCODE
-            sqlState = e.getSQLState(); // Get SQLSTATE
-
-            // Your code to handle errors comes here;
-            // something more meaningful than a print would be good
-            System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
-        }
-
-        // Inserting Data into the table
-        try {
-            String insertSQL = "INSERT INTO " + tableName + " VALUES ( 1 , \'Vicki\' ) " ;
-            System.out.println ( insertSQL ) ;
-            statement.executeUpdate ( insertSQL ) ;
-            System.out.println ( "DONE" ) ;
-
-            insertSQL = "INSERT INTO " + tableName + " VALUES ( 2 , \'Vera\' ) " ;
-            System.out.println ( insertSQL ) ;
-            statement.executeUpdate ( insertSQL ) ;
-            System.out.println ( "DONE" ) ;
-            insertSQL = "INSERT INTO " + tableName + " VALUES ( 3 , \'Franca\' ) " ;
-            System.out.println ( insertSQL ) ;
-            statement.executeUpdate ( insertSQL ) ;
-            System.out.println ( "DONE" ) ;
-
-        } catch (SQLException e)
-        {
-            sqlCode = e.getErrorCode(); // Get SQLCODE
-            sqlState = e.gsetSQLState(); // Get SQLSTATE
-
-            // Your code to handle errors comes here;
-            // something more meaningful than a print would be good
-            System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
-        }*/
-
-        // Querying a table
-        /*try {
-            String querySQL = "SELECT aid, name from author";
-            System.out.println (querySQL) ;
-            java.sql.ResultSet rs = statement.executeQuery ( querySQL ) ;
-            while ( rs.next ( ) ) {
-                int id = rs.getInt ( 1 ) ;
-                String name = rs.getString (2);
-                System.out.println ("aid:  " + id);
-                System.out.println ("name:  " + name);
-            }
-            System.out.println ("DONE");
-        } catch (SQLException e)
-        {
-            sqlCode = e.getErrorCode(); // Get SQLCODE
-            sqlState = e.getSQLState(); // Get SQLSTATE
-
-            // Your code to handle errors comes here;
-            // something more meaningful than a print would be good
-            System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
-        }*/
-
-        //Updating a table
-        /*try {
-            String updateSQL = "UPDATE " + tableName + " SET NAME = \'Mimi\' WHERE id = 3";
-            System.out.println(updateSQL);
-            statement.executeUpdate(updateSQL);
-            System.out.println("DONE");
-
-            // Dropping a table
-            String dropSQL = "DROP TABLE " + tableName;
-            System.out.println ( dropSQL ) ;
-            statement.executeUpdate ( dropSQL ) ;
-            System.out.println ("DONE");
-        } catch (SQLException e)
-        {
-            sqlCode = e.getErrorCode(); // Get SQLCODE
-            sqlState = e.getSQLState(); // Get SQLSTATE
-
-            // Your code to handle errors comes here;
-            // something more meaningful than a print would be good
-            System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
-        }*/
     }
 }
