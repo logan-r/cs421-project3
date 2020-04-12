@@ -96,42 +96,30 @@ public class DatabaseController {
      * @return the number of book records in databse
      * @throws SQLException
      */
-    public static ArrayList<Book> getBooks(Connection conn, int limit, int offset) throws SQLException {
+    public static int getNumberOfBooks(Connection conn) throws SQLException {
         // Make a new sql statement
         Statement statement = conn.createStatement();
 
-        // Make arraylist to put books into
-        ArrayList<Book> allBooks = new ArrayList<>();
+        int count = 0; // Number of books
 
         // Attempt to execute the query
         try {
             java.sql.ResultSet results = statement.executeQuery(
-                    "select book.bid, book.title, author.name, book.description, book.price, book.pagecount from writtenby join " +
-                            "author on writtenby.aid = author.aid join book on writtenby.bid = book.bid order by book.bid limit " + limit + " offset " + offset
+                    "select count(*) from book"
             );
 
-            // Convert every returned tuple to an order object and add list
             while (results.next()) {
-                allBooks.add(
-                        new Book(
-                                results.getInt("bid"),
-                                results.getString("title"),
-                                results.getString("name"),
-                                results.getString("description"),
-                                results.getDouble("price"),
-                                results.getInt("pagecount")
-                        )
-                );
+                count = results.getInt(1);
             }
         } catch (SQLException e) {
             System.out.println("Error fetching books. Error code: " + e.getErrorCode() + "  sqlState: " + e.getSQLState());
             statement.close();
-            return null;
+            return 0;
         }
 
         // Return list of all books
         statement.close();
-        return allBooks;
+        return count;
     }
 
     /**
