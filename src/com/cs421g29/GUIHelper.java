@@ -168,7 +168,7 @@ public class GUIHelper {
     
     
     
-    public static String option1() {
+    public static String next() {
     	String result = "";
 
     	try {
@@ -205,7 +205,7 @@ public class GUIHelper {
     
     
     
-    public static String option2() {
+    public static String prev() {
     	String result = "";
 
     	try {

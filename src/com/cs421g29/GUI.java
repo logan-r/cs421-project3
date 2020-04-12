@@ -16,8 +16,8 @@ public class GUI {
 	private JButton prev = new JButton("PREVIOUS 10 BOOKS");	
 	private JButton next  = new JButton("NEXT 10 BOOKS");
 	
-	//private JButton button1;
-	//private JButton button2;
+	private JButton button1;
+	private JButton button2;
 	private JButton button3;
 	private JButton button4;
 	private JButton button5;
@@ -42,7 +42,7 @@ public class GUI {
 	
 
 	
-	private JPanel taskPanel;
+	private JPanel title;
 	private JPanel buttonPanel;
 	private JPanel displayPanel;
 	private JPanel resultPanel;
@@ -58,11 +58,11 @@ public class GUI {
 			
 			if (e.getSource()==prev) { //Insert New Orders
 				
-				displayedbooks.setText(convertToMultiline(GUIHelper.option1()));
+				displayedbooks.setText(convertToMultiline(GUIHelper.next()));
 				
 				
 			}else if  (e.getSource()==next) {
-				displayedbooks.setText(convertToMultiline(GUIHelper.option2()));
+				displayedbooks.setText(convertToMultiline(GUIHelper.prev()));
 				
 
 				
@@ -93,25 +93,25 @@ public class GUI {
 	public GUI() {
 		
 		frame = new JFrame();
-		//frame.setLayout (new GridLayout(0,1));
 		
 		
-		taskPanel = new JPanel();
+		
+		title = new JPanel();
 		displayPanel = new JPanel();
 		buttonPanel = new JPanel();	
 		resultPanel = new JPanel();	
 		
 		//add all panels
-		frame.add(taskPanel, BorderLayout.PAGE_START);
-		frame.add(displayPanel, BorderLayout.LINE_START);	
-		frame.add(resultPanel, BorderLayout.CENTER);
+		frame.add(title, BorderLayout.PAGE_START);
+		frame.add(displayPanel, BorderLayout.CENTER);	
+		//frame.add(resultPanel, BorderLayout.CENTER);
 		frame.add(buttonPanel, BorderLayout.PAGE_END);
 		frame.setSize(800,800);
 		
 		
 		//Task panel	
 		label = new JLabel("Welcome to a bookstore program!");
-		taskPanel.add(label,BorderLayout.PAGE_START);	
+		title.add(label,BorderLayout.PAGE_START);	
 		label.setFont(new Font("Serif", Font.BOLD, 24));
 		
 		
@@ -120,8 +120,12 @@ public class GUI {
 		displayPanel.add(displayedbooks);
 		displayedbooks.setText(convertToMultiline(GUIHelper.display()));
 		displayedbooks.setVisible(true);
+		
 		displayPanel.add(prev, BorderLayout.LINE_START);
 		displayPanel.add(next, BorderLayout.LINE_START);
+		
+		prev.addActionListener(new ButtonListener());
+		next.addActionListener(new ButtonListener());
 		
 		
 		/*
@@ -164,21 +168,21 @@ public class GUI {
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder (20,20,20,20)); //top,b,l,r
 		buttonPanel.setLayout (new GridLayout(0,1));
 		
-		
+		button1 = new JButton("option1"); 
+		button2 = new JButton("option2"); 
 		button3 = new JButton("option3"); //including their shippers
 		button4 = new JButton("option4");
 		button5 = new JButton("option5");
 			
-		prev.addActionListener(new ButtonListener());
-		next.addActionListener(new ButtonListener());
+		
 		button3.addActionListener(new ButtonListener());
 		button4.addActionListener(new ButtonListener());
 		button5.addActionListener(new ButtonListener());
 		confirm.addActionListener(new ButtonListener());
 		
 		
-		//buttonPanel.add(prev, BorderLayout.LINE_START);
-		//buttonPanel.add(next, BorderLayout.LINE_START);
+		buttonPanel.add(button1);
+		buttonPanel.add(button2);
 		buttonPanel.add(button3);
 		buttonPanel.add(button4);
 		buttonPanel.add(button5);
@@ -188,7 +192,7 @@ public class GUI {
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("Online Book Vender Database");
-		frame.pack();
+		//frame.pack();
 		frame.setVisible(true);
 		
 		
