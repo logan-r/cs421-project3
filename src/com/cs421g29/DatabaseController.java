@@ -45,6 +45,40 @@ public class DatabaseController {
     }
 
     /**
+     * Gets a list of every user email in the database
+     * @param conn  a connection to the database (see this.openConnection)
+     * @return an array list of every email or null if there was an error
+     * @throws SQLException
+     */
+    public static ArrayList<String> getAllUserNames(Connection conn) throws SQLException {
+        // Make a new sql statement
+        Statement statement = conn.createStatement();
+
+        // Make arraylist to put results into
+        ArrayList<String> allEmails = new ArrayList<>();
+
+        // Attempt to execute the query
+        try {
+            java.sql.ResultSet results = statement.executeQuery(
+                    "SELECT email FROM useraccounts"
+            );
+
+            // Convert every returned tuple to an order object and add list
+            while (results.next()) {
+                allEmails.add(results.getString(1));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching all emails. Error code: " + e.getErrorCode() + "  sqlState: " + e.getSQLState());
+            statement.close();
+            return null;
+        }
+
+        // Return list of all orders
+        statement.close();
+        return allEmails;
+    }
+
+    /**
      * Gets a list of every order in the database
      * @param conn  a connection to the database (see this.openConnection)
      * @return an array list of every order or null if there was an error
