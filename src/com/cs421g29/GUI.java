@@ -13,8 +13,11 @@ public class GUI {
 
 	private JFrame frame;
 	
-	private JButton button1;
-	private JButton button2;
+	private JButton prev = new JButton("PREVIOUS 10 BOOKS");	
+	private JButton next  = new JButton("NEXT 10 BOOKS");
+	
+	//private JButton button1;
+	//private JButton button2;
 	private JButton button3;
 	private JButton button4;
 	private JButton button5;
@@ -53,29 +56,12 @@ public class GUI {
 		public void actionPerformed(ActionEvent e) {
 
 			
-			if (e.getSource()==button1) { //Insert New Orders
-				
-				
-				
-				/*
-				//otd, date, rate, paymentmethod, status, shippingaddress		
-				result.setText("");
-				label.setText("Insert a new order:");
-				input1.setText("Order date (yyyy-mm-dd):");
-				input2.setText("Total price:");
-				input3.setText("Payment Method:");
-				input4.setText("Status:");
-				input5.setText("Shipping Address:");
-				
-				int[] arr = {1, 2, 3, 4, 5};
-				setPromptsVisible (arr);
-				*/
-				
+			if (e.getSource()==prev) { //Insert New Orders
 				
 				displayedbooks.setText(convertToMultiline(GUIHelper.option1()));
 				
 				
-			}else if  (e.getSource()==button2) {
+			}else if  (e.getSource()==next) {
 				displayedbooks.setText(convertToMultiline(GUIHelper.option2()));
 				
 
@@ -124,7 +110,7 @@ public class GUI {
 		
 		
 		//Task panel	
-		label = new JLabel("Welcome!");
+		label = new JLabel("Welcome to a bookstore program!");
 		taskPanel.add(label,BorderLayout.PAGE_START);	
 		label.setFont(new Font("Serif", Font.BOLD, 24));
 		
@@ -134,6 +120,10 @@ public class GUI {
 		displayPanel.add(displayedbooks);
 		displayedbooks.setText(convertToMultiline(GUIHelper.display()));
 		displayedbooks.setVisible(true);
+		displayPanel.add(prev, BorderLayout.LINE_START);
+		displayPanel.add(next, BorderLayout.LINE_START);
+		
+		
 		/*
 		displayPanel.setLayout (new GridLayout(0,2));
 		displayPanel.add(input1 );
@@ -174,22 +164,21 @@ public class GUI {
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder (20,20,20,20)); //top,b,l,r
 		buttonPanel.setLayout (new GridLayout(0,1));
 		
-		button1 = new JButton("VIEW PREVIOUS 10 BOOKS");	
-		button2 = new JButton("VIEW NEXT 10 BOOKS");
+		
 		button3 = new JButton("option3"); //including their shippers
 		button4 = new JButton("option4");
 		button5 = new JButton("option5");
 			
-		button1.addActionListener(new ButtonListener());
-		button2.addActionListener(new ButtonListener());
+		prev.addActionListener(new ButtonListener());
+		next.addActionListener(new ButtonListener());
 		button3.addActionListener(new ButtonListener());
 		button4.addActionListener(new ButtonListener());
 		button5.addActionListener(new ButtonListener());
 		confirm.addActionListener(new ButtonListener());
 		
 		
-		buttonPanel.add(button1);
-		buttonPanel.add(button2);
+		//buttonPanel.add(prev, BorderLayout.LINE_START);
+		//buttonPanel.add(next, BorderLayout.LINE_START);
 		buttonPanel.add(button3);
 		buttonPanel.add(button4);
 		buttonPanel.add(button5);
