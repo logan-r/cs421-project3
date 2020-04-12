@@ -44,12 +44,11 @@ public class Main {
         System.out.println("Pick one of the following commands:");
         System.out.println("1. View previous 10 books");
         System.out.println("2. View next 10 books");
-        System.out.println("3. View user's shopping cart");
-        System.out.println("4. Add book to user's shopping cart");
-        System.out.println("5. Make user add rating to book");
-        System.out.println("6. View book's average rating");
-        System.out.println("7. View author ranked by their books' average ratings");
-        System.out.println("8. Quit");
+        System.out.println("3. Lookup user by email and view their shopping cart");
+        System.out.println("4. Add review rating to book from user");
+        System.out.println("5. View book's average rating");
+        System.out.println("6. View author ranked by their books' average ratings");
+        System.out.println("7. Quit");
 
         int numberOfBooks = DatabaseController.getNumberOfBooks(conn);
 
@@ -78,8 +77,50 @@ public class Main {
                 }
             }
 
+            // Shows book in a user's shopping cart
+            else if (choice.equals("3")) {
+                // Get 3 sample emails from database
+                ArrayList<String> sample = DatabaseController.getUserEmails(conn, 3);
+
+                // Ask for user emails
+                String email;
+                System.out.println("");
+                System.out.println("VIEW USER'S SHOPPING CART");
+                System.out.println("=========================");
+                while (true) {
+                    System.out.println("");
+                    System.out.println("What the email of the user who's cart you want to view?");
+                    System.out.println("(Some emails from our database: " + String.join(", ", sample) + ")");
+                    System.out.print("Email: ");
+                    email = inputScanner.nextLine();
+
+                    // Check if email they entered is valid
+                    if (DatabaseController.existsUserWithEmail(conn, email)) {
+                        break;
+                    } else {
+                        System.out.println("");
+                        System.out.println("No user with that email exists");
+                    }
+                }
+
+                // Get books associated with this account
+                ArrayList<Book> books = DatabaseController.getBooksInUserShoppingCart(conn, email);
+                System.out.println("");
+                System.out.println("Books in this user's shopping cart:");
+                if (books.size() > 0) {
+                    printBooks(books);
+                } else {
+                    System.out.println("This user has no book in their shopping cart.");
+                }
+                System.out.println("");
+                System.out.println("");
+                System.out.println("Press enter to continue...");
+                inputScanner.nextLine();
+                break;
+            }
+
             // User decided to quit
-            else if (choice.equals("8")) {
+            else if (choice.equals("7")) {
                 return false; // Return false if user has exited program
             } else {
                 System.out.println("Invalid command. Enter a number like \"1\" (but without the \"\").");
@@ -89,7 +130,6 @@ public class Main {
         // Return true if user hasn't exited program
         return true;
     }
-
 
     public static void main(String[] args) throws SQLException {
         // Open connection to database

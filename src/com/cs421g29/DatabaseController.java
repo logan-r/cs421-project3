@@ -49,7 +49,7 @@ public class DatabaseController {
      * @param conn  a connection to the database (see this.openConnection)
      * @param limit  the number of books to fetch
      * @param offset   the number of books to skip before fetching
-     * @return an array list of every order or null if there was an error
+     * @return an array list of books or null if there was an error
      * @throws SQLException
      */
     public static ArrayList<Book> getBooks(Connection conn, int limit, int offset) throws SQLException {
@@ -112,7 +112,7 @@ public class DatabaseController {
                 count = results.getInt(1);
             }
         } catch (SQLException e) {
-            System.out.println("Error fetching books. Error code: " + e.getErrorCode() + "  sqlState: " + e.getSQLState());
+            System.out.println("Error fetching number of books. Error code: " + e.getErrorCode() + "  sqlState: " + e.getSQLState());
             statement.close();
             return 0;
         }
@@ -123,12 +123,60 @@ public class DatabaseController {
     }
 
     /**
-     * Gets a list of every user email in the database
+     * Gets all the books in a specific user's shopping cart
      * @param conn  a connection to the database (see this.openConnection)
-     * @return an array list of every email or null if there was an error
+     * @param email  the email of the user from whose shopping cart to fetch the books
+     * @return an array list of books or null if there was an error
      * @throws SQLException
      */
-    public static ArrayList<String> getAllUserNames(Connection conn) throws SQLException {
+    public static ArrayList<Book> getBooksInUserShoppingCart(Connection conn, String email) throws SQLException {
+        // Make a new sql statement
+        PreparedStatement statement = conn.prepareStatement(
+                "select book.bid, book.title, author.name, book.description, book.price, book.pagecount from " +
+                        "useraccount join shoppingcart on useraccount.email = shoppingcart.email join cartincludes on " +
+                        "shoppingcart.sc_id = cartincludes.sc_id join book on book.bid = cartincludes.bid " +
+                        "join writtenby on writtenby.bid = book.bid join author on author.aid = writtenby.aid " +
+                        "where useraccount.email = ?;"
+        );
+        statement.setString(1, email);
+
+        // Make arraylist to put books into
+        ArrayList<Book> allBooks = new ArrayList<>();
+
+        // Attempt to execute the query
+        try {
+            java.sql.ResultSet results = statement.executeQuery();
+
+            // Convert every returned tuple to an order object and add list
+            while (results.next()) {
+                allBooks.add(
+                        new Book(
+                                results.getInt("bid"),
+                                results.getString("title"),
+                                results.getString("name"),
+                                results.getString("description"),
+                                results.getDouble("price"),
+                                results.getInt("pagecount")
+                        )
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching books. Error code: " + e.getErrorCode() + "  sqlState: " + e.getSQLState());
+            statement.close();
+            return null;
+        }
+
+        // Return list of all books
+        statement.close();
+        return allBooks;
+    }
+
+    /** Get a list of every user in database
+     * @param conn  Connection to database
+     * @return list of users
+     * @throws SQLException
+     */
+    public static ArrayList<String> getUserEmails(Connection conn) throws SQLException {
         // Make a new sql statement
         Statement statement = conn.createStatement();
 
@@ -138,7 +186,7 @@ public class DatabaseController {
         // Attempt to execute the query
         try {
             java.sql.ResultSet results = statement.executeQuery(
-                    "SELECT email FROM useraccounts"
+                    "SELECT email FROM useraccount"
             );
 
             // Convert every returned tuple to an order object and add list
@@ -157,48 +205,71 @@ public class DatabaseController {
     }
 
     /**
-     * Gets a list of every order in the database associated with a specific email
+     * Gets a list of every user email in the database
      * @param conn  a connection to the database (see this.openConnection)
-     * @param useremail  the email of the user to have lookup
-     * @return an array list of every order or null if there was an error
+     * @return an array list of every email or null if there was an error
      * @throws SQLException
      */
-    public static ArrayList<Order> getAllUsersOrders(Connection conn, String useremail) throws SQLException {
+    public static ArrayList<String> getUserEmails(Connection conn, int limit) throws SQLException {
         // Make a new sql statement
         Statement statement = conn.createStatement();
 
         // Make arraylist to put results into
-        ArrayList<Order> allOrders = new ArrayList<Order>();
+        ArrayList<String> allEmails = new ArrayList<>();
 
         // Attempt to execute the query
         try {
             java.sql.ResultSet results = statement.executeQuery(
-                    "SELECT * FROM userorder WHERE useremail = '" + useremail + "'"
+                    "SELECT email FROM useraccount limit " + limit
             );
 
             // Convert every returned tuple to an order object and add list
             while (results.next()) {
-                allOrders.add(
-                    new Order(
-                            results.getInt("oid"),
-                            results.getDate("creatingdate"),
-                            results.getString("paymentmethod"),
-                            results.getString("status"),
-                            results.getString("email"),
-                            results.getString("shippingaddress"),
-                            results.getFloat("rate")
-                    )
-                );
+                allEmails.add(results.getString(1));
             }
         } catch (SQLException e) {
-            System.out.println("Error fetching all orders. Error code: " + e.getErrorCode() + "  sqlState: " + e.getSQLState());
+            System.out.println("Error fetching all emails. Error code: " + e.getErrorCode() + "  sqlState: " + e.getSQLState());
             statement.close();
             return null;
         }
 
         // Return list of all orders
         statement.close();
-        return allOrders;
+        return allEmails;
+    }
+
+    /**
+     * Check if a user with a certain email exist in our database
+     * @param conn  a connection to the database (see this.openConnection)
+     * @param email  the email to check if exists
+     * @return true if user exists, else false
+     * @throws SQLException
+     */
+    public static boolean existsUserWithEmail(Connection conn, String email) throws SQLException {
+        // Make a new sql statement
+        PreparedStatement statement = conn.prepareStatement("SELECT count(*) FROM useraccount WHERE email = ?");
+        statement.setString(1, email);
+
+        // Record the number of users that match said email
+        int count = 0;
+
+        // Attempt to execute the query
+        try {
+            java.sql.ResultSet results = statement.executeQuery();
+
+            // Convert every returned tuple to an order object and add list
+            while (results.next()) {
+                count = results.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching user with specific email. Error code: " + e.getErrorCode() + "  sqlState: " + e.getSQLState());
+            statement.close();
+            return false;
+        }
+
+        // Return list of all orders
+        statement.close();
+        return count > 0;
     }
 
     /**
