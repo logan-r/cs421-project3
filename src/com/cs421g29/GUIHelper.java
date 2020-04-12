@@ -1,17 +1,15 @@
 package com.cs421g29;
 
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Scanner;
 
-
-
-
-public class Main {
-    // Let user page books in groups of 10
+public class GUIHelper {
+	
+	
+	
+	// Let user page books in groups of 10
     public static int bookOffset = 0;
     public static final int pageSize = 10;
 
@@ -21,6 +19,12 @@ public class Main {
     // Create scanner to check for user input
     public static Scanner inputScanner = new Scanner(System.in);
 
+    
+    public GUIHelper() {
+		// TODO Auto-generated constructor stub
+	}
+    
+    
     /**
      * Prints a list of books to the console
      */
@@ -29,11 +33,23 @@ public class Main {
             System.out.println(
                     String.format(
                             "* [ID #%d] \"%s\" by %s ($%.2f, %d pages)",
-                            book.id, book.title, book.author, book.price, book.pageCount
-                    )
-            );
+                            book.id, book.title, book.author, book.price, book.pageCount));
         }
     }
+    
+    
+    
+    public static String printBooksString (ArrayList<Book> bookList) {
+		String result = "";
+		 for (Book book : bookList) {
+	            result+= String.format( "* [ID #%d] \"%s\" by %s ($%.2f, %d pages)",
+	                            book.id, book.title, book.author, book.price, book.pageCount) + System.lineSeparator();
+	     }
+		return result;
+	}
+    
+    
+	
 
     /**
      * Prompt the user for a command to execute from the main menu and then do so
@@ -89,6 +105,8 @@ public class Main {
         // Return true if user hasn't exited program
         return true;
     }
+    
+    
 
 
     public static void main(String[] args) throws SQLException {
@@ -122,4 +140,114 @@ public class Main {
             DatabaseController.closeConnection(conn);
         }
     }
+    
+    
+    
+    
+    public static String display() {
+    	String result = "";
+    	
+    	try {
+    	conn = DatabaseController.openConnection();
+    	
+    	if (conn != null) {
+    		ArrayList<Book> displayedBooks = DatabaseController.getBooks(conn, pageSize, bookOffset);
+    		
+    		 // Display the books to the user
+    		result += "===============================" + System.lineSeparator();
+    		result += "Here are some of our books:" + System.lineSeparator();
+    		result += printBooksString(displayedBooks);
+    	}	
+    	DatabaseController.closeConnection(conn);
+    	}catch (SQLException e) {
+		
+            System.out.println(e.getMessage());
+        } 
+    	return result;
+    }
+    
+    
+    
+    public static String option1() {
+    	String result = "";
+
+    	try {
+        	conn = DatabaseController.openConnection();
+        	
+
+        	if (conn != null) {
+        		int numberOfBooks = DatabaseController.getNumberOfBooks(conn);
+        		
+        		if (bookOffset - pageSize >= 0) {
+                    bookOffset -= pageSize;
+                } else {
+                    System.out.println("Already at start of book catalog, can't view previous books (try viewing next " + pageSize + " books).");
+                }
+            	
+        		ArrayList<Book> displayedBooks = DatabaseController.getBooks(conn, pageSize, bookOffset);
+        		
+        		 // Display the books to the user
+        		result += "===============================" + System.lineSeparator();
+        		result += "Here are some of our books:" + System.lineSeparator();
+        		result += printBooksString(displayedBooks);
+        	}	
+        	
+        	
+        	DatabaseController.closeConnection(conn);
+        }catch (SQLException e) {
+    		
+            System.out.println(e.getMessage());
+        } 
+    	
+    	
+    	return result;
+    }
+    
+    
+    
+    public static String option2() {
+    	String result = "";
+
+    	try {
+        	conn = DatabaseController.openConnection();
+        	
+
+        	if (conn != null) {
+        		int numberOfBooks = DatabaseController.getNumberOfBooks(conn);
+        		
+            	if (bookOffset + pageSize < numberOfBooks) {
+                    bookOffset += pageSize;
+            	} else {
+                    System.out.println("Already at end of book catalog, can't view more books (try viewing previous " + pageSize + " books).");
+            	}
+            	
+        		ArrayList<Book> displayedBooks = DatabaseController.getBooks(conn, pageSize, bookOffset);
+        		
+        		 // Display the books to the user
+        		result += "===============================" + System.lineSeparator();
+        		result += "Here are some of our books:" + System.lineSeparator();
+        		result += printBooksString(displayedBooks);
+        	}	
+        	
+        	
+        	DatabaseController.closeConnection(conn);
+        }catch (SQLException e) {
+    		
+            System.out.println(e.getMessage());
+        } 
+    	
+    	
+    	return result;
+    }
+
+	
+	
+
+	
+	
+	
+
+
+	
+
 }
