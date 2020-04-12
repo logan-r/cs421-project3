@@ -8,6 +8,16 @@ import java.util.Date;
 import java.util.Scanner;
 
 public class Main {
+    // Let user page books in groups of 10
+    public static int bookOffset = 0;
+    public static final int pageSize = 10;
+
+    // Store user's connection to database
+    public static Connection conn;
+
+    // Create scanner to check for user input
+    public static Scanner inputScanner = new Scanner(System.in);
+
     /**
      * Prints a list of books to the console
      */
@@ -15,31 +25,78 @@ public class Main {
         for (Book book : bookList) {
             System.out.println(
                     String.format(
-                            "* [ID #%d] \"%s\" by %s ($%.2f, %d page)",
+                            "* [ID #%d] \"%s\" by %s ($%.2f, %d pages)",
                             book.id, book.title, book.author, book.price, book.pageCount
                     )
             );
         }
-
     }
+
+    /**
+     * Prompt the user for a command to execute from the main menu and then do so
+     * @return whether or not user has decided to keep running program (false = quit)
+     */
+    public static boolean getCommand() throws SQLException {
+        // Let the user pick a command
+        System.out.println("Pick one of the following commands:");
+        System.out.println("1. View previous 10 books");
+        System.out.println("2. View next 10 books");
+        System.out.println("3. View user's shopping cart");
+        System.out.println("4. Add book to user's shopping cart");
+        System.out.println("5. Make user add rating to book");
+        System.out.println("6. View book's average rating");
+        System.out.println("7. View author ranked by their books' average ratings");
+        System.out.println("8. Quit");
+
+        int numberOfBooks = DatabaseController.getNumberOfBooks(conn);
+
+        while (true) {
+            System.out.println("");
+            System.out.print("Pick a command number (e.g. 1): ");
+            String choice = inputScanner.nextLine();
+
+            // Did user pick previous 10 books?
+            if (choice.equals("1")) {
+                if (bookOffset - pageSize >= 0) {
+                    bookOffset -= pageSize;
+                    break;
+                } else {
+                    System.out.println("Already at start of book catalog, can't view previous books (try viewing next " + pageSize + " books).");
+                }
+            }
+
+            // Show user next 10 books
+            else if (choice.equals("2")) {
+                if (bookOffset + pageSize < numberOfBooks) {
+                    bookOffset += pageSize;
+                    break;
+                } else {
+                    System.out.println("Already at end of book catalog, can't view more books (try viewing previous " + pageSize + " books).");
+                }
+            }
+
+            // User decided to quit
+            else if (choice.equals("8")) {
+                return false; // Return false if user has exited program
+            } else {
+                System.out.println("Invalid command. Enter a number like \"1\" (but without the \"\").");
+            }
+        }
+
+        // Return true if user hasn't exited program
+        return true;
+    }
+
 
     public static void main(String[] args) throws SQLException {
         // Open connection to database
-        Connection conn = DatabaseController.openConnection();
+        conn = DatabaseController.openConnection();
         if (conn != null) {
-            // Let user page books in groups of 10
-            int bookOffset = 0;
-            final int pageSize = 10;
-
-            // Create scanner to check for user input
-            Scanner inputScanner = new Scanner(System.in);
-
             while (true) {
                 // Fetch the page of books the user can currently see
                 ArrayList<Book> displayedBooks = DatabaseController.getBooks(conn, pageSize, bookOffset);
 
                 // Display the books to the user
-                System.out.println("");
                 System.out.println("");
                 System.out.println("");
                 System.out.println("");
@@ -52,24 +109,11 @@ public class Main {
                 System.out.println("");
                 System.out.println("");
 
-                // Let the user pick a command
-                System.out.println("Pick one of the following commands:");
-                System.out.println("1. View next 10 books");
-                System.out.println("2. View last 10 books (disabled)");
-                System.out.println("3. View user's shopping cart");
-                System.out.println("4. Add book to user's shopping cart");
-                System.out.println("5. Make user add rating to book");
-                System.out.println("6. View book's average rating");
-                System.out.println("7. View author ranked by their books' average ratings");
-                System.out.println("");
-                System.out.print("Pick a command number (e.g. 1): ");
-                String choice = inputScanner.nextLine();
-                System.out.println(choice);
-
-                // Did user pick next 10 books?
-
-
-                break;
+                // Check the user's input
+                boolean keepRunning = getCommand();
+                if (!keepRunning) {
+                    break;
+                }
             }
 
             DatabaseController.closeConnection(conn);

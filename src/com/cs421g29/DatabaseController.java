@@ -105,7 +105,7 @@ public class DatabaseController {
         // Attempt to execute the query
         try {
             java.sql.ResultSet results = statement.executeQuery(
-                    "select count(*) from book"
+                    "select count(*) from writtenby"
             );
 
             while (results.next()) {
