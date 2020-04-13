@@ -23,7 +23,7 @@ public class GUI {
 	private JButton button2;
 	private JButton button3;
 	private JButton button4;
-	private JButton button5;
+	
 
 	private JLabel label;
 	
@@ -58,10 +58,7 @@ public class GUI {
 	private JTextField in2 = new JTextField();
 	private JLabel input3 = new JLabel ("Field3: ");
 	private JTextField in3 = new JTextField();
-	private JLabel input4 = new JLabel ("Field4: ");
-	private JTextField in4 = new JTextField();
-	private JLabel input5 = new JLabel ("Field5: ");
-	private JTextField in5 = new JTextField();
+	
 	private JLabel dummy = new JLabel (" ");
 	private JButton confirm = new JButton("CONFIRM");
 	
@@ -107,8 +104,16 @@ public class GUI {
 				args[0]="3";
 				int[] arr = {1,2};
 				setPromptsVisible (arr);
+			}else if  (e.getSource()==button4) {
+				input1.setText("User Email (eg. Ali.Zemlak94@yahoo.ca): ");
+				input2.setText("Book ID: ");
+				input3.setText("Score (1 to 5 stars): ");
 					
-	
+				args[0]="4";
+				int[] arr = {1,2,3};
+				setPromptsVisible (arr);
+						
+		
 			}else if (e.getSource()==confirm) {
 				//if confirm
 				if (args[0].equals("1")) {
@@ -123,6 +128,13 @@ public class GUI {
 					args[1] = in1.getText(); //bid
 					args[2] = in2.getText(); //copies
 					result.setText(convertToMultiline(GUIHelper.option3(args[1], args[2])));
+				}
+				if (args[0].equals("4")) {
+					args[1] = in1.getText(); //email
+					args[2] = in2.getText(); //bid
+					args[3] = in3.getText(); //rating
+					
+					result.setText(convertToMultiline(GUIHelper.option4(args[1], args[2], args[2])));
 				}
 				
 				resetFields();
@@ -163,14 +175,30 @@ public class GUI {
 		
 
 		//title
-		label = new JLabel("Welcome to a bookstore program!");
+		label = new JLabel("Welcome To Book Store Database");
+		label.setHorizontalAlignment(JLabel.CENTER);
+		title.setLayout (new GridLayout(0,1));
 		title.add(label,BorderLayout.PAGE_START);	
-		label.setFont(new Font("Serif", Font.BOLD, 24));
+		label.setFont(new Font("Serif", Font.BOLD, 30));
+		
+		JLabel m = new JLabel("MENU: Look Up Books");
+		m.setHorizontalAlignment(JLabel.CENTER);
+		m.setFont(new Font("Serif", Font.BOLD, 20));
+		
+		JLabel empty = new JLabel(" ");
+		title.add(empty);
+		title.add(m);
+		
+		title.add(prev);
+		title.add(next);
+		prev.addActionListener(new ButtonListener());
+		next.addActionListener(new ButtonListener());
 		
 		
 		// display panel
 		displayPanel.setBorder(BorderFactory.createEmptyBorder (20,20,20,20));	
-		displayPanel.add(displayedbooks, BorderLayout.CENTER);
+		displayPanel.add(displayedbooks);
+	
 		displayedbooks.setText(convertToMultiline(GUIHelper.display()));
 		displayedbooks.setVisible(true);
 		
@@ -190,10 +218,7 @@ public class GUI {
 		leftPanel.add(in2);
 		leftPanel.add(input3);
 		leftPanel.add(in3);
-		leftPanel.add(input4);
-		leftPanel.add(in4);
-		leftPanel.add(input5);
-		leftPanel.add(in5);
+		
 		leftPanel.add(dummy);
 		leftPanel.add(confirm);
 		input1.setVisible(false);
@@ -202,10 +227,7 @@ public class GUI {
 		in2.setVisible(false);
 		input3.setVisible(false);
 		in3.setVisible(false);
-		input4.setVisible(false);
-		in4.setVisible(false);
-		input5.setVisible(false);
-		in5.setVisible(false);
+		
 		dummy.setVisible(false);
 		confirm.setVisible(false);
 		
@@ -221,36 +243,34 @@ public class GUI {
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder (20,20,20,20)); //top,b,l,r
 		buttonPanel.setLayout (new GridLayout(0,1));
 		
-		
-		
+
 		button1 = new JButton("VIEW USER'S SHOPPING CART"); 
 		button2 = new JButton("VIEW BOOK'S AVERAGE RATING"); 
 		button3 = new JButton("UPDATE BOOK'S STOCK"); //including their shippers
-		button4 = new JButton("option4");
-		button5 = new JButton("option5");
+		button4 = new JButton("ADD RATING");
+		
 			
 		button1.addActionListener(new ButtonListener());
 		button2.addActionListener(new ButtonListener());
 		button3.addActionListener(new ButtonListener());
 		button4.addActionListener(new ButtonListener());
-		button5.addActionListener(new ButtonListener());
+		
 		confirm.addActionListener(new ButtonListener());
 		
-		buttonPanel.add(prev);
-		buttonPanel.add(next);
 		
-		JLabel l = new JLabel("MENU");
+		
+		JLabel l = new JLabel("MENU: Update Database");
 		buttonPanel.add(l);
 		l.setHorizontalAlignment(JLabel.CENTER);
 		l.setFont(new Font("Serif", Font.BOLD, 20));
-		prev.addActionListener(new ButtonListener());
-		next.addActionListener(new ButtonListener());
+		
+	
 		
 		buttonPanel.add(button1);
 		buttonPanel.add(button2);
 		buttonPanel.add(button3);
 		buttonPanel.add(button4);
-		buttonPanel.add(button5);
+		
 		
 		
 		
@@ -274,8 +294,7 @@ public class GUI {
 		in1.setText(null);
 		in2.setText(null);
 		in3.setText(null);
-		in4.setText(null);
-		in5.setText(null);
+	
 		
 		args[1] = null;
 		args[2] = null;
@@ -294,10 +313,7 @@ public class GUI {
 		in2.setVisible(false);
 		input3.setVisible(false);
 		in3.setVisible(false);
-		input4.setVisible(false);
-		in4.setVisible(false);
-		input5.setVisible(false);
-		in5.setVisible(false);
+		
 		
 		for (int num: arr) {
 			if (num==1) {
@@ -312,14 +328,7 @@ public class GUI {
 				input3.setVisible(true);
 				in3.setVisible(true);
 			}
-			if (num==4) {
-				input4.setVisible(true);
-				in4.setVisible(true);
-			}
-			if (num==5) {
-				input5.setVisible(true);
-				in5.setVisible(true);
-			}
+			
 		}
 			
 		dummy.setVisible(true);
