@@ -119,6 +119,89 @@ public class Main {
                 break;
             }
 
+            // Add a review to a book
+            else if (choice.equals("4")) {
+                // Get 3 sample emails from database
+                ArrayList<String> sample = DatabaseController.getUserEmails(conn, 3);
+
+                // Ask for user emails
+                String email;
+                System.out.println("");
+                System.out.println("ADD RATING TO BOOK");
+                System.out.println("=========================");
+                while (true) {
+                    System.out.println("");
+                    System.out.println("What the email of the user whose performing the review of the book?");
+                    System.out.println("(Some emails from our database: " + String.join(", ", sample) + ")");
+                    System.out.print("Email: ");
+                    email = inputScanner.nextLine();
+
+                    // Check if email they entered is valid
+                    if (DatabaseController.existsUserWithEmail(conn, email)) {
+                        break;
+                    } else {
+                        System.out.println("");
+                        System.out.println("No user with that email exists");
+                    }
+                }
+
+                // Get id of book being reviewed
+                int id;
+                while (true) {
+                    System.out.println("");
+                    System.out.println("What's the id # of the book being reviewed? ");
+                    try {
+                        id = inputScanner.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("That's not a valid number.");
+                        inputScanner.next();
+                        continue;
+                    }
+
+                    // Check if id they entered is valid
+                    if (DatabaseController.existsBookWithId(conn, id)) {
+                        break;
+                    } else {
+                        System.out.println("");
+                        System.out.println("No book exists with that id");
+                    }
+                }
+
+                // Get the rating (from 1 to 5)
+                int rating;
+                while (true) {
+                    System.out.println("");
+                    System.out.println("What's the user's rating of the book (1 to 5 stars)? ");
+                    try {
+                        rating = inputScanner.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("That's not a valid number (enter \"1\", \"2\", \"3\", \"4\", or \"5\" but without the \"\").");
+                        inputScanner.next();
+                        continue;
+                    }
+
+                    // Check if id they entered is valid
+                    if (rating >= 0 && rating <= 5) {
+                        break;
+                    } else {
+                        System.out.println("");
+                        System.out.println("That's not a valid number (enter \"1\", \"2\", \"3\", \"4\", or \"5\" but without the \"\").");
+                    }
+                }
+
+                // Perform rating of book
+                DatabaseController.addRatingToBook(conn, id, email, rating);
+
+                // Print results
+                System.out.println("Review added.");
+                System.out.println("");
+                System.out.println("");
+                System.out.println("Press enter to continue...");
+                inputScanner.nextLine();
+                inputScanner.nextLine();
+                break;
+            }
+
             // Look up average rating for book
             else if (choice.equals("5")) {
                 int id;

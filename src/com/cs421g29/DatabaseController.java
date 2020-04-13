@@ -1,8 +1,7 @@
 package com.cs421g29;
 
-import java.util.Date;
-
 import java.sql.* ;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -380,6 +379,62 @@ public class DatabaseController {
         statement.close();
         return count > 0;
     }
+
+    /**
+     * Adds a rating to the database
+     * @param conn  a connection to the database
+     * @param id  the id of the book being rated
+     * @param email  the email of the user performing the rating
+     * @param rating  the score user gave book
+     * @return true if successfully added, false otherwise
+     * @throws SQLException
+     */
+    public static boolean addRatingToBook(Connection conn, int id, String email, int rating) throws SQLException {
+        // Get the current highest rid
+        int highestRid = 0;
+        PreparedStatement statement2 = conn.prepareStatement("select max(rid) from rating;");
+        try {
+            java.sql.ResultSet results = statement2.executeQuery();
+            while (results.next()) {
+                highestRid = results.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching highest rid. Error code: " + e.getErrorCode() + "  sqlState: " + e.getSQLState());
+            statement2.close();
+            return false;
+        }
+        statement2.close();
+
+        // Make a new sql statement
+        PreparedStatement statement = conn.prepareStatement(
+                "INSERT INTO rating VALUES (?, ?, ?, ?, ?, ?)"
+        );
+        statement.setInt(1, highestRid + 1);
+        statement.setInt(2, rating);
+        statement.setDate(3, new java.sql.Date(2020, 01, 01));
+        statement.setString(4, "");
+        statement.setInt(5, id);
+        statement.setString(6, email);
+
+
+        // Attempt to execute the query
+        try {
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            if (e.getSQLState() == "23503") {
+                System.out.println("Error creating rating. No valid account exists for user email.");
+            } else {
+                System.out.println("Error creating rating. Error code: " + e.getErrorCode() + "  sqlState: " + e.getSQLState());
+            }
+            statement.close();
+            return false;
+        }
+
+        // Return true if updated
+        statement.close();
+        return true;
+    }
+
 
     /**
      * Add an order to the database
