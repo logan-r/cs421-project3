@@ -16,8 +16,8 @@ public class GUI {
 
 	private JFrame frame;
 	
-	private JButton prev = new JButton("PREVIOUS 10 BOOKS");	
-	private JButton next  = new JButton("NEXT 10 BOOKS");
+	private JButton prev = new JButton("PREVIOUS");	
+	private JButton next  = new JButton("NEXT");
 	
 	private JButton button1;
 	private JButton button2;
@@ -134,7 +134,7 @@ public class GUI {
 					args[2] = in2.getText(); //bid
 					args[3] = in3.getText(); //rating
 					
-					result.setText(convertToMultiline(GUIHelper.option4(args[1], args[2], args[2])));
+					result.setText(convertToMultiline(GUIHelper.option4(args[1], args[2], args[3])));
 				}
 				
 				resetFields();

@@ -20,13 +20,7 @@ public class GUIHelper {
     public static Scanner inputScanner = new Scanner(System.in);
 
     
-    public GUIHelper() {
-		// TODO Auto-generated constructor stub
-	}
-    
-    
    
-    
     public static String printBooksString (ArrayList<Book> bookList) {
 		String result = "";
 		 for (Book book : bookList) {
@@ -36,9 +30,6 @@ public class GUIHelper {
 		return result;
 	}
     
-    
-	
-
     
     
     
@@ -67,6 +58,7 @@ public class GUIHelper {
         } 
     	return result;
     }
+    
     
     
     
@@ -322,9 +314,7 @@ public class GUIHelper {
     		return result;
     	}
     	
-    	
-    
-    	
+
     	
     	try {
         	conn = DatabaseController.openConnection();
@@ -345,7 +335,7 @@ public class GUIHelper {
                 }
                 
                 if (rating <0 || rating > 5) {
-                	result += "That's not a valid number (enter \"1\", \"2\", \"3\", \"4\", or \"5\" but without the \"\")."+ System.lineSeparator();
+                	result += "That's not a valid rating score (enter \"1\", \"2\", \"3\", \"4\", or \"5\" but without the \"\")."+ System.lineSeparator();
                     return result; 
           
                 }
