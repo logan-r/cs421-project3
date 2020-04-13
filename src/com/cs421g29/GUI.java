@@ -93,23 +93,24 @@ public class GUI {
 				args[0]="1";
 				int[] arr = {1};
 				setPromptsVisible (arr);
-				
-				
-				
-			}else if  (e.getSource()==button5) {
-				label.setText("5");
+
+			}else if  (e.getSource()==button2) {
+				input1.setText("Book ID: ");
+				args[0]="2";
+				int[] arr = {1};
+				setPromptsVisible (arr);
 				
 			}else if (e.getSource()==confirm) {
 				//if confirm
 				if (args[0].equals("1")) {
 					args[1] = in1.getText();
+					result.setText(convertToMultiline(GUIHelper.option1(args[1])));
 				}
-				result.setText(convertToMultiline(GUIHelper.option1(args[1])));
-				/*
-				String output = Connect.connect(args);
-				result.setText(convertToMultiline(output));
-				result.setVisible(true);
-				*/
+				if (args[0].equals("2")) {
+					args[1] = in1.getText();
+					result.setText(convertToMultiline(GUIHelper.option2(args[1])));
+				}
+				
 				resetFields();
 			}
 		}
@@ -209,7 +210,7 @@ public class GUI {
 		
 		
 		button1 = new JButton("VIEW USER'S SHOPPING CART"); 
-		button2 = new JButton("option2"); 
+		button2 = new JButton("VIEW BOOK'S AVERAGE RATING"); 
 		button3 = new JButton("option3"); //including their shippers
 		button4 = new JButton("option4");
 		button5 = new JButton("option5");

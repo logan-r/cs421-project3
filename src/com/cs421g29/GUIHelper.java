@@ -135,6 +135,49 @@ public class GUIHelper {
                 inputScanner.nextLine();
                 break;
             }
+            
+         // Look up average rating for book
+            else if (choice.equals("5")) {
+                int id;
+                while (true) {
+                    System.out.println("");
+                    System.out.println("What's the id # of the book you want to view the average rating for? ");
+                    id = inputScanner.nextInt();
+
+                    // Check if id they entered is valid
+                    if (DatabaseController.existsBookWithId(conn, id)) {
+                        break;
+                    } else {
+                        System.out.println("");
+                        System.out.println("No book exists with that id");
+                    }
+                }
+
+                // Get that book and its average rating
+                Book book = DatabaseController.getBookOfIdWithAvgRating(conn, id);
+                System.out.println("");
+                if (book.rating != 0) {
+                    System.out.println(
+                            String.format(
+                                    "Book #%d \"%s\" by %s has an average rating of %.2f stars out of 5",
+                                    book.id, book.title, book.author, book.rating
+                            )
+                    );
+                } else {
+                    System.out.println(
+                            String.format(
+                                    "Book #%d \"%s\" by %s has no ratings yet",
+                                    book.id, book.title, book.author, book.rating
+                            )
+                    );
+                }
+                System.out.println("");
+                System.out.println("");
+                System.out.println("Press enter to continue...");
+                inputScanner.nextLine();
+                inputScanner.nextLine();
+                break;
+            }
 
 
             // User decided to quit
@@ -288,6 +331,7 @@ public class GUIHelper {
     
     public static String option1(String email) {
     	String result = "";
+    	
 
     	try {
         	conn = DatabaseController.openConnection();
@@ -298,7 +342,6 @@ public class GUIHelper {
         		// Check if email they entered is valid
                 if (!DatabaseController.existsUserWithEmail(conn, email)) {
                  
-                    System.out.println("");
                     result += "No user with that email exists"+ System.lineSeparator();
                     return result; 
                 }
@@ -330,6 +373,53 @@ public class GUIHelper {
     
     
     
+    
+    
+    public static String option2(String bookid) {
+    	String result = "";
+    	
+    	int id = Integer.parseInt(bookid);
+    	
+    	try {
+        	conn = DatabaseController.openConnection();
+        	
+
+        	if (conn != null) {
+        		
+        		// Check if id they entered is valid
+                if (!DatabaseController.existsBookWithId(conn, id)) {
+                	result += "No book exists with that id"+ System.lineSeparator();
+                    return result; 
+                }
+                
+                
+                //valid id
+                // Get that book and its average rating
+                Book book = DatabaseController.getBookOfIdWithAvgRating(conn, id);
+                
+                if (book.rating != 0) {
+                	result += String.format("Book #%d \"%s\" by %s has an average rating of %.2f stars out of 5",
+                                    book.id, book.title, book.author, book.rating) + System.lineSeparator();
+                	
+                } else {
+                	result += String.format("Book #%d \"%s\" by %s has no ratings yet",
+                            book.id, book.title, book.author, book.rating) + System.lineSeparator();
+  
+                }
+        		
+	
+        	}	
+        	
+        	
+        	DatabaseController.closeConnection(conn);
+        	
+        }catch (SQLException e) {
+    		
+            System.out.println(e.getMessage());
+        } 
+    	
+    	return result;
+    }
     
     
     
