@@ -409,7 +409,7 @@ public class GUIHelper {
                 Book book = DatabaseController.getBookOfIdWithAvgRating(conn, id);
                 
                 if (book.rating != 0) {
-                	result += String.format("Book #%d \"%s\" by %s has an average rating of %.2f stars out of 5",
+                	result += String.format("Book #%d : \"%s\" \nAuthor: %s \nAverage Rating: %.2f / 5 stars",
                                     book.id, book.title, book.author, book.rating) + System.lineSeparator();
                 	
                 } else {
