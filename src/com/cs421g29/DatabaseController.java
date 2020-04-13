@@ -62,7 +62,7 @@ public class DatabaseController {
         // Attempt to execute the query
         try {
             java.sql.ResultSet results = statement.executeQuery(
-                    "select book.bid, book.title, author.name, book.description, book.price, book.pagecount from writtenby join " +
+                    "select book.bid, book.title, author.name, book.description, book.price, book.stockcount, book.pagecount from writtenby join " +
                             "author on writtenby.aid = author.aid join book on writtenby.bid = book.bid order by book.bid limit " + limit + " offset " + offset
             );
 
@@ -75,7 +75,8 @@ public class DatabaseController {
                                 results.getString("name"),
                                 results.getString("description"),
                                 results.getDouble("price"),
-                                results.getInt("pagecount")
+                                results.getInt("pagecount"),
+                                results.getInt("stockcount")
                         )
                 );
             }
@@ -100,7 +101,7 @@ public class DatabaseController {
     public static Book getBookOfIdWithAvgRating(Connection conn, int id) throws SQLException {
         // Make a new sql statement
         PreparedStatement statement = conn.prepareStatement(
-                "select book.bid, book.title, author.name, book.description, book.price, book.pagecount, coalesce(avg_score.average, 0) average from writtenby join " +
+                "select book.bid, book.title, author.name, book.description, book.price, book.pagecount, book.stockcount, coalesce(avg_score.average, 0) average from writtenby join " +
                         "author on writtenby.aid = author.aid join book on writtenby.bid = book.bid " +
                         "left join (SELECT bid, AVG(score) average FROM rating GROUP BY bid) avg_score on book.bid = avg_score.bid " +
                         "where book.bid = ?"
@@ -123,6 +124,7 @@ public class DatabaseController {
                         results.getString("description"),
                         results.getDouble("price"),
                         results.getInt("pagecount"),
+                        results.getInt("stockcount"),
                         results.getDouble("average")
                 );
             }
@@ -179,7 +181,7 @@ public class DatabaseController {
     public static ArrayList<Book> getBooksInUserShoppingCart(Connection conn, String email) throws SQLException {
         // Make a new sql statement
         PreparedStatement statement = conn.prepareStatement(
-                "select book.bid, book.title, author.name, book.description, book.price, book.pagecount from " +
+                "select book.bid, book.title, author.name, book.description, book.price, book.pagecount, book.stockcount from " +
                         "useraccount join shoppingcart on useraccount.email = shoppingcart.email join cartincludes on " +
                         "shoppingcart.sc_id = cartincludes.sc_id join book on book.bid = cartincludes.bid " +
                         "join writtenby on writtenby.bid = book.bid join author on author.aid = writtenby.aid " +
@@ -203,7 +205,8 @@ public class DatabaseController {
                                 results.getString("name"),
                                 results.getString("description"),
                                 results.getDouble("price"),
-                                results.getInt("pagecount")
+                                results.getInt("pagecount"),
+                                results.getInt("stockcount")
                         )
                 );
             }
@@ -250,6 +253,31 @@ public class DatabaseController {
         // Return list of all orders
         statement.close();
         return count > 0;
+    }
+
+    /**
+     * Updates the stock of a specific book
+     * @param conn  a connection to the database (see this.openConnection)
+     * @param id  the id of the book to update
+     * @param stock  the new number of copies we possess
+     * @throws SQLException
+     */
+    public static void updateBookStock(Connection conn, int id, int stock) throws SQLException {
+        // Make a new sql statement
+        PreparedStatement statement = conn.prepareStatement("update book set stockcount = ? where bid = ?");
+        statement.setInt(1, stock);
+        statement.setInt(2, id);
+
+        // Attempt to execute the query
+        try {
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error updating book stock. Error code: " + e.getErrorCode() + "  sqlState: " + e.getSQLState());
+            statement.close();
+        }
+
+        // Return list of all orders
+        statement.close();
     }
 
     /** Get a list of every user in database
