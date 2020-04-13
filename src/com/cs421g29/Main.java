@@ -119,6 +119,49 @@ public class Main {
                 break;
             }
 
+            // Look up average rating for book
+            else if (choice.equals("5")) {
+                int id;
+                while (true) {
+                    System.out.println("");
+                    System.out.println("What's the id # of the book you want to view the average rating for? ");
+                    id = inputScanner.nextInt();
+
+                    // Check if id they entered is valid
+                    if (DatabaseController.existsBookWithId(conn, id)) {
+                        break;
+                    } else {
+                        System.out.println("");
+                        System.out.println("No book exists with that id");
+                    }
+                }
+
+                // Get that book and its average rating
+                Book book = DatabaseController.getBookOfIdWithAvgRating(conn, id);
+                System.out.println("");
+                if (book.rating != 0) {
+                    System.out.println(
+                            String.format(
+                                    "Book #%d \"%s\" by %s has an average rating of %.2f stars out of 5",
+                                    book.id, book.title, book.author, book.rating
+                            )
+                    );
+                } else {
+                    System.out.println(
+                            String.format(
+                                    "Book #%d \"%s\" by %s has no ratings yet",
+                                    book.id, book.title, book.author, book.rating
+                            )
+                    );
+                }
+                System.out.println("");
+                System.out.println("");
+                System.out.println("Press enter to continue...");
+                inputScanner.nextLine();
+                inputScanner.nextLine();
+                break;
+            }
+
             // User decided to quit
             else if (choice.equals("7")) {
                 return false; // Return false if user has exited program
