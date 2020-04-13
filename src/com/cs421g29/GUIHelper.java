@@ -93,6 +93,49 @@ public class GUIHelper {
                     System.out.println("Already at end of book catalog, can't view more books (try viewing previous " + pageSize + " books).");
                 }
             }
+            
+            
+            else if (choice.equals("3")) {
+                // Get 3 sample emails from database
+                ArrayList<String> sample = DatabaseController.getUserEmails(conn, 3);
+
+                // Ask for user emails
+                String email;
+                System.out.println("");
+                System.out.println("VIEW USER'S SHOPPING CART");
+                System.out.println("=========================");
+                while (true) {
+                    System.out.println("");
+                    System.out.println("What the email of the user who's cart you want to view?");
+                    System.out.println("(Some emails from our database: " + String.join(", ", sample) + ")");
+                    System.out.print("Email: ");
+                    email = inputScanner.nextLine();
+
+                    // Check if email they entered is valid
+                    if (DatabaseController.existsUserWithEmail(conn, email)) {
+                        break;
+                    } else {
+                        System.out.println("");
+                        System.out.println("No user with that email exists");
+                    }
+                }
+
+                // Get books associated with this account
+                ArrayList<Book> books = DatabaseController.getBooksInUserShoppingCart(conn, email);
+                System.out.println("");
+                System.out.println("Books in this user's shopping cart:");
+                if (books.size() > 0) {
+                    printBooks(books);
+                } else {
+                    System.out.println("This user has no book in their shopping cart.");
+                }
+                System.out.println("");
+                System.out.println("");
+                System.out.println("Press enter to continue...");
+                inputScanner.nextLine();
+                break;
+            }
+
 
             // User decided to quit
             else if (choice.equals("8")) {
@@ -239,15 +282,58 @@ public class GUIHelper {
     	
     	return result;
     }
+    
+    
+    
+    
+    public static String option1(String email) {
+    	String result = "";
 
-	
-	
+    	try {
+        	conn = DatabaseController.openConnection();
+        	
 
-	
-	
-	
+        	if (conn != null) {
+        		
+        		// Check if email they entered is valid
+                if (!DatabaseController.existsUserWithEmail(conn, email)) {
+                 
+                    System.out.println("");
+                    result += "No user with that email exists"+ System.lineSeparator();
+                    return result; 
+                }
+                
+                //valid
+                // Get books associated with this account
+                ArrayList<Book> books = DatabaseController.getBooksInUserShoppingCart(conn, email);
+             
+                result += "Books in this user's shopping cart:" + System.lineSeparator();
+                if (books.size() > 0) {
+                	result += printBooksString(books);
+                    //printBooks(books);
+                } else {
+                	result += "This user has no book in their shopping cart." + System.lineSeparator();
+                }
 
-
+        		
+        	}	
+        	
+        	
+        	DatabaseController.closeConnection(conn);
+        }catch (SQLException e) {
+    		
+            System.out.println(e.getMessage());
+        } 
+    	
+    	return result;
+    }
+    
+    
+    
+    
+    
+    
+    
 	
 
 }

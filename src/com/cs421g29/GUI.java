@@ -1,10 +1,13 @@
 package com.cs421g29;
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
+
 import java.awt.Font;
 import java.awt.GridLayout;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.*;
 
@@ -26,6 +29,28 @@ public class GUI {
 	
 	private JLabel displayedbooks=new JLabel (" ");
 	
+	
+	
+	
+	
+
+	
+	private JPanel title;
+	private JPanel buttonPanel;
+	private JPanel middlePanel;
+	
+	
+	private JPanel displayPanel;
+	private JPanel resultPanel;
+
+	private JPanel leftPanel = new JPanel();
+	private JPanel rightPanel = new JPanel();
+	
+	
+	
+	
+	private JLabel result = new JLabel ("                                                                                          ");
+	
 	private JLabel input1 = new JLabel ("Field1: ");
 	private JTextField in1 = new JTextField();
 	
@@ -40,14 +65,9 @@ public class GUI {
 	private JLabel dummy = new JLabel (" ");
 	private JButton confirm = new JButton("CONFIRM");
 	
-
 	
-	private JPanel title;
-	private JPanel buttonPanel;
-	private JPanel displayPanel;
-	private JPanel resultPanel;
 	
-	private JLabel result = new JLabel (" ");
+	
 	private String[] args = new String[6];
 	
 	private class ButtonListener implements ActionListener{
@@ -56,7 +76,7 @@ public class GUI {
 		public void actionPerformed(ActionEvent e) {
 
 			
-			if (e.getSource()==prev) { //Insert New Orders
+			if (e.getSource()==prev) { 
 				
 				displayedbooks.setText(convertToMultiline(GUIHelper.next()));
 				
@@ -66,15 +86,25 @@ public class GUI {
 				
 
 				
-			}else if  (e.getSource()==button4) {
-				label.setText("4");
+			}else if  (e.getSource()==button1) {
+				//Ali.Zemlak94@yahoo.ca, Sasha15@gmail.com, Marianne.Sipes@hotmail.com)
+				
+				input1.setText("User Email of Shopping Cart (eg. Ali.Zemlak94@yahoo.ca): ");
+				args[0]="1";
+				int[] arr = {1};
+				setPromptsVisible (arr);
+				
+				
+				
 			}else if  (e.getSource()==button5) {
 				label.setText("5");
 				
 			}else if (e.getSource()==confirm) {
 				//if confirm
-				
-				args[1] = in1.getText();
+				if (args[0].equals("1")) {
+					args[1] = in1.getText();
+				}
+				result.setText(convertToMultiline(GUIHelper.option1(args[1])));
 				/*
 				String output = Connect.connect(args);
 				result.setText(convertToMultiline(output));
@@ -97,19 +127,27 @@ public class GUI {
 		
 		
 		title = new JPanel();
+		middlePanel = new JPanel();	
+		
+		buttonPanel = new JPanel();
+		
 		displayPanel = new JPanel();
-		buttonPanel = new JPanel();	
-		resultPanel = new JPanel();	
+		resultPanel = new JPanel();
+		
 		
 		//add all panels
 		frame.add(title, BorderLayout.PAGE_START);
-		frame.add(displayPanel, BorderLayout.CENTER);	
-		//frame.add(resultPanel, BorderLayout.CENTER);
+		frame.add(middlePanel, BorderLayout.CENTER);
 		frame.add(buttonPanel, BorderLayout.PAGE_END);
 		frame.setSize(800,800);
 		
+		middlePanel.setLayout (new GridLayout(0,1));
+		middlePanel.add(displayPanel);	
+		middlePanel.add(resultPanel);	
 		
-		//Task panel	
+		
+
+		//title
 		label = new JLabel("Welcome to a bookstore program!");
 		title.add(label,BorderLayout.PAGE_START);	
 		label.setFont(new Font("Serif", Font.BOLD, 24));
@@ -117,32 +155,32 @@ public class GUI {
 		
 		// display panel
 		displayPanel.setBorder(BorderFactory.createEmptyBorder (20,20,20,20));	
-		displayPanel.add(displayedbooks);
+		displayPanel.add(displayedbooks, BorderLayout.CENTER);
 		displayedbooks.setText(convertToMultiline(GUIHelper.display()));
 		displayedbooks.setVisible(true);
 		
-		displayPanel.add(prev, BorderLayout.LINE_START);
-		displayPanel.add(next, BorderLayout.LINE_START);
-		
-		prev.addActionListener(new ButtonListener());
-		next.addActionListener(new ButtonListener());
 		
 		
-		/*
-		displayPanel.setLayout (new GridLayout(0,2));
-		displayPanel.add(input1 );
-		displayPanel.add(in1 );
-		displayPanel.add(input2 );
-		displayPanel.add(in2 );
-		displayPanel.add(input3);
-		displayPanel.add(in3 );
-		displayPanel.add(input4 );
-		displayPanel.add(in4 );
-		displayPanel.add(input5 );
-		displayPanel.add(in5 );
-		displayPanel.add(dummy);
-		displayPanel.add(confirm );
+		//result panel
+	
+		resultPanel.add(leftPanel, BorderLayout.BEFORE_LINE_BEGINS);
+		resultPanel.add(rightPanel, BorderLayout.AFTER_LINE_ENDS);
+
+		resultPanel.add(result);
 		
+		leftPanel.setLayout(new GridLayout(0,2));
+		leftPanel.add(input1);
+		leftPanel.add(in1);
+		leftPanel.add(input2);
+		leftPanel.add(in2);
+		leftPanel.add(input3);
+		leftPanel.add(in3);
+		leftPanel.add(input4);
+		leftPanel.add(in4);
+		leftPanel.add(input5);
+		leftPanel.add(in5);
+		leftPanel.add(dummy);
+		leftPanel.add(confirm);
 		input1.setVisible(false);
 		in1.setVisible(false);
 		input2.setVisible(false);
@@ -155,12 +193,12 @@ public class GUI {
 		in5.setVisible(false);
 		dummy.setVisible(false);
 		confirm.setVisible(false);
-		*/
 		
 		
-		//result panel
-		resultPanel.add(result);
-		result.setVisible(false);
+		
+		
+		
+		//result.setVisible(false);
 		
 		
 		//button panel
@@ -168,24 +206,37 @@ public class GUI {
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder (20,20,20,20)); //top,b,l,r
 		buttonPanel.setLayout (new GridLayout(0,1));
 		
-		button1 = new JButton("option1"); 
+		
+		
+		button1 = new JButton("VIEW USER'S SHOPPING CART"); 
 		button2 = new JButton("option2"); 
 		button3 = new JButton("option3"); //including their shippers
 		button4 = new JButton("option4");
 		button5 = new JButton("option5");
 			
-		
+		button1.addActionListener(new ButtonListener());
+		button2.addActionListener(new ButtonListener());
 		button3.addActionListener(new ButtonListener());
 		button4.addActionListener(new ButtonListener());
 		button5.addActionListener(new ButtonListener());
 		confirm.addActionListener(new ButtonListener());
 		
+		buttonPanel.add(prev);
+		buttonPanel.add(next);
+		
+		JLabel l = new JLabel("MENU");
+		buttonPanel.add(l);
+		l.setHorizontalAlignment(JLabel.CENTER);
+		l.setFont(new Font("Serif", Font.BOLD, 20));
+		prev.addActionListener(new ButtonListener());
+		next.addActionListener(new ButtonListener());
 		
 		buttonPanel.add(button1);
 		buttonPanel.add(button2);
 		buttonPanel.add(button3);
 		buttonPanel.add(button4);
 		buttonPanel.add(button5);
+		
 		
 		
 		
