@@ -135,7 +135,103 @@ public class GUIHelper {
                 inputScanner.nextLine();
                 break;
             }
+            
+         // Look up average rating for book
+            else if (choice.equals("5")) {
+                int id;
+                while (true) {
+                    System.out.println("");
+                    System.out.println("What's the id # of the book you want to view the average rating for? ");
+                    id = inputScanner.nextInt();
 
+                    // Check if id they entered is valid
+                    if (DatabaseController.existsBookWithId(conn, id)) {
+                        break;
+                    } else {
+                        System.out.println("");
+                        System.out.println("No book exists with that id");
+                    }
+                }
+
+                // Get that book and its average rating
+                Book book = DatabaseController.getBookOfIdWithAvgRating(conn, id);
+                System.out.println("");
+                if (book.rating != 0) {
+                    System.out.println(
+                            String.format(
+                                    "Book #%d \"%s\" by %s has an average rating of %.2f stars out of 5",
+                                    book.id, book.title, book.author, book.rating
+                            )
+                    );
+                } else {
+                    System.out.println(
+                            String.format(
+                                    "Book #%d \"%s\" by %s has no ratings yet",
+                                    book.id, book.title, book.author, book.rating
+                            )
+                    );
+                }
+                System.out.println("");
+                System.out.println("");
+                System.out.println("Press enter to continue...");
+                inputScanner.nextLine();
+                inputScanner.nextLine();
+                break;
+            }
+
+            
+         // Update a books stock
+            else if (choice.equals("6")) {
+                int id;
+                while (true) {
+                    System.out.println("");
+                    System.out.println("What's the id # of the book whose stock you want to update? ");
+                    try {
+                        id = inputScanner.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("That's not a valid number.");
+                        inputScanner.next();
+                        continue;
+                    }
+
+                    // Check if id they entered is valid
+                    if (DatabaseController.existsBookWithId(conn, id)) {
+                        break;
+                    } else {
+                        System.out.println("");
+                        System.out.println("No book exists with that id");
+                    }
+                }
+
+                int newStock;
+                while (true) {
+                    System.out.println("");
+                    System.out.println("How many copies of that book do we now have in stock? ");
+                    try {
+                        newStock = inputScanner.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("That's not a valid number.");
+                        inputScanner.next();
+                        continue;
+                    }
+
+                    if (newStock >= 0) {
+                        break;
+                    }
+                    System.out.println("That's not a valid number.");
+                }
+
+                // Update that book's stock
+                DatabaseController.updateBookStock(conn, id, newStock);
+
+                // Print results
+                System.out.println("Book stock update. There are now " + newStock + " copies.");
+                System.out.println("");
+                System.out.println("");
+                System.out.println("Press enter to continue...");
+                inputScanner.nextLine();
+                break;
+            }
 
             // User decided to quit
             else if (choice.equals("8")) {
@@ -200,8 +296,12 @@ public class GUIHelper {
     		result += "===============================" + System.lineSeparator();
     		result += "Here are some of our books:" + System.lineSeparator();
     		result += printBooksString(displayedBooks);
-    	}	
-    	DatabaseController.closeConnection(conn);
+    		DatabaseController.closeConnection(conn);
+    	}else {
+    		result = "Can't connect to comp421.cs.mcgill.ca";
+    		return result;
+    	}
+    	
     	}catch (SQLException e) {
 		
             System.out.println(e.getMessage());
@@ -270,10 +370,14 @@ public class GUIHelper {
         		result += "===============================" + System.lineSeparator();
         		result += "Here are some of our books:" + System.lineSeparator();
         		result += printBooksString(displayedBooks);
-        	}	
+        		DatabaseController.closeConnection(conn);
+        	}else {
+        		result = "Can't connect to comp421.cs.mcgill.ca";
+        		return result;
+        	}
         	
         	
-        	DatabaseController.closeConnection(conn);
+        	
         }catch (SQLException e) {
     		
             System.out.println(e.getMessage());
@@ -288,6 +392,7 @@ public class GUIHelper {
     
     public static String option1(String email) {
     	String result = "";
+    	
 
     	try {
         	conn = DatabaseController.openConnection();
@@ -298,7 +403,6 @@ public class GUIHelper {
         		// Check if email they entered is valid
                 if (!DatabaseController.existsUserWithEmail(conn, email)) {
                  
-                    System.out.println("");
                     result += "No user with that email exists"+ System.lineSeparator();
                     return result; 
                 }
@@ -315,11 +419,14 @@ public class GUIHelper {
                 	result += "This user has no book in their shopping cart." + System.lineSeparator();
                 }
 
-        		
-        	}	
+                DatabaseController.closeConnection(conn);
+        	}else {
+        		result = "Can't connect to comp421.cs.mcgill.ca";
+        		return result;
+        	}
         	
         	
-        	DatabaseController.closeConnection(conn);
+        	
         }catch (SQLException e) {
     		
             System.out.println(e.getMessage());
@@ -330,6 +437,116 @@ public class GUIHelper {
     
     
     
+    
+    
+    public static String option2(String bookid) {
+    	String result = "";
+    	
+    	int id ;
+    	
+    	try {
+	    	id = Integer.parseInt(bookid);
+    	}catch(Exception e) {
+    		result += "Non-valid Number";
+    		return result;
+    	}
+    	
+    	try {
+        	conn = DatabaseController.openConnection();
+        	
+
+        	if (conn != null) {
+        		
+        		// Check if id they entered is valid
+                if (!DatabaseController.existsBookWithId(conn, id)) {
+                	result += "No book exists with that id"+ System.lineSeparator();
+                    return result; 
+                }
+                
+                
+                //valid id
+                // Get that book and its average rating
+                Book book = DatabaseController.getBookOfIdWithAvgRating(conn, id);
+                
+                if (book.rating != 0) {
+                	result += String.format("Book #%d : \"%s\" \nAuthor: %s \nAverage Rating: %.2f / 5 stars",
+                                    book.id, book.title, book.author, book.rating) + System.lineSeparator();
+                	
+                } else {
+                	result += String.format("Book #%d \"%s\" by %s has no ratings yet",
+                            book.id, book.title, book.author, book.rating) + System.lineSeparator();
+  
+                }
+        		
+                DatabaseController.closeConnection(conn);
+        	}else {
+        		result = "Can't connect to comp421.cs.mcgill.ca";
+        		return result;
+        	}
+        	
+        	
+        	
+        	
+        }catch (SQLException e) {
+    		
+            System.out.println(e.getMessage());
+        } 
+    	
+    	return result;
+    }
+    
+    
+    
+    public static String option3(String bidString, String numString) {
+    	String result = "";
+    	int id ;
+    	int newStock ;
+    	
+    	try {
+	    	id = Integer.parseInt(bidString);
+	    	newStock = Integer.parseInt(numString);
+    	}catch(Exception e) {
+    		result += "Non-valid Number";
+    		return result;
+    	}
+    	
+    	try {
+        	conn = DatabaseController.openConnection();
+        	
+
+        	if (conn != null) {
+        		
+        		// Check if id they entered is valid
+                if (!DatabaseController.existsBookWithId(conn, id)) {
+                	result += "No book exists with that id"+ System.lineSeparator();
+                	return result; 
+                }
+                
+                if (newStock < 0) {
+                	result += "Non-valid Number"+ System.lineSeparator();
+                	return result; 
+                }
+                
+                // Update that book's stock
+                DatabaseController.updateBookStock(conn, id, newStock);
+
+                // Print results
+                result += "Book stock updated. There are now " + newStock + " copies."+ System.lineSeparator();
+	
+                DatabaseController.closeConnection(conn);
+        	}else {
+        		result = "Can't connect to comp421.cs.mcgill.ca"+ System.lineSeparator();;
+        		return result;
+        	}
+        	
+
+        }catch (SQLException e) {
+    		
+            System.out.println(e.getMessage());
+        } 
+    	
+    	return result;
+    }
     
     
     

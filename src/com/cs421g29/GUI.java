@@ -93,23 +93,38 @@ public class GUI {
 				args[0]="1";
 				int[] arr = {1};
 				setPromptsVisible (arr);
+
+			}else if  (e.getSource()==button2) {
+				input1.setText("Book ID: ");
+				args[0]="2";
+				int[] arr = {1};
+				setPromptsVisible (arr);
 				
+			}else if  (e.getSource()==button3) {
+				input1.setText("Book ID: ");
+				input2.setText("Number Of Copied Of This Book: ");
 				
-				
-			}else if  (e.getSource()==button5) {
-				label.setText("5");
-				
+				args[0]="3";
+				int[] arr = {1,2};
+				setPromptsVisible (arr);
+					
+	
 			}else if (e.getSource()==confirm) {
 				//if confirm
 				if (args[0].equals("1")) {
 					args[1] = in1.getText();
+					result.setText(convertToMultiline(GUIHelper.option1(args[1])));
 				}
-				result.setText(convertToMultiline(GUIHelper.option1(args[1])));
-				/*
-				String output = Connect.connect(args);
-				result.setText(convertToMultiline(output));
-				result.setVisible(true);
-				*/
+				if (args[0].equals("2")) {
+					args[1] = in1.getText();
+					result.setText(convertToMultiline(GUIHelper.option2(args[1])));
+				}
+				if (args[0].equals("3")) {
+					args[1] = in1.getText(); //bid
+					args[2] = in2.getText(); //copies
+					result.setText(convertToMultiline(GUIHelper.option3(args[1], args[2])));
+				}
+				
 				resetFields();
 			}
 		}
@@ -163,8 +178,8 @@ public class GUI {
 		
 		//result panel
 	
-		resultPanel.add(leftPanel, BorderLayout.BEFORE_LINE_BEGINS);
-		resultPanel.add(rightPanel, BorderLayout.AFTER_LINE_ENDS);
+		resultPanel.add(leftPanel, BorderLayout.NORTH);
+		resultPanel.add(rightPanel, BorderLayout.SOUTH);
 
 		resultPanel.add(result);
 		
@@ -209,8 +224,8 @@ public class GUI {
 		
 		
 		button1 = new JButton("VIEW USER'S SHOPPING CART"); 
-		button2 = new JButton("option2"); 
-		button3 = new JButton("option3"); //including their shippers
+		button2 = new JButton("VIEW BOOK'S AVERAGE RATING"); 
+		button3 = new JButton("UPDATE BOOK'S STOCK"); //including their shippers
 		button4 = new JButton("option4");
 		button5 = new JButton("option5");
 			
@@ -272,7 +287,7 @@ public class GUI {
 	
 	
 	private void setPromptsVisible (int[] arr) {
-		
+		result.setText(" ");
 		input1.setVisible(false);
 		in1.setVisible(false);
 		input2.setVisible(false);
