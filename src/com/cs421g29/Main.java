@@ -28,8 +28,8 @@ public class Main {
         for (Book book : bookList) {
             System.out.println(
                     String.format(
-                            "* [ID #%d] \"%s\" by %s ($%.2f, %d pages)",
-                            book.id, book.title, book.author, book.price, book.pageCount
+                            "* [ID #%d] \"%s\" by %s ($%.2f, %d in stock, %d pages)",
+                            book.id, book.title, book.author, book.price, book.stock, book.pageCount
                     )
             );
         }
@@ -45,9 +45,9 @@ public class Main {
         System.out.println("1. View previous 10 books");
         System.out.println("2. View next 10 books");
         System.out.println("3. Lookup user by email and view their shopping cart");
-        System.out.println("4. Add review rating to book from user");
+        System.out.println("4. Add rating of book from user");
         System.out.println("5. View book's average rating");
-        System.out.println("6. View author ranked by their books' average ratings");
+        System.out.println("6. Update book's stock");
         System.out.println("7. Quit");
 
         int numberOfBooks = DatabaseController.getNumberOfBooks(conn);
@@ -125,7 +125,13 @@ public class Main {
                 while (true) {
                     System.out.println("");
                     System.out.println("What's the id # of the book you want to view the average rating for? ");
-                    id = inputScanner.nextInt();
+                    try {
+                        id = inputScanner.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("That's not a valid number.");
+                        inputScanner.next();
+                        continue;
+                    }
 
                     // Check if id they entered is valid
                     if (DatabaseController.existsBookWithId(conn, id)) {
@@ -158,6 +164,59 @@ public class Main {
                 System.out.println("");
                 System.out.println("Press enter to continue...");
                 inputScanner.nextLine();
+                inputScanner.nextLine();
+                break;
+            }
+
+            // Update a books stock
+            else if (choice.equals("6")) {
+                int id;
+                while (true) {
+                    System.out.println("");
+                    System.out.println("What's the id # of the book whose stock you want to update? ");
+                    try {
+                        id = inputScanner.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("That's not a valid number.");
+                        inputScanner.next();
+                        continue;
+                    }
+
+                    // Check if id they entered is valid
+                    if (DatabaseController.existsBookWithId(conn, id)) {
+                        break;
+                    } else {
+                        System.out.println("");
+                        System.out.println("No book exists with that id");
+                    }
+                }
+
+                int newStock;
+                while (true) {
+                    System.out.println("");
+                    System.out.println("How many copies of that book do we now have in stock? ");
+                    try {
+                        newStock = inputScanner.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("That's not a valid number.");
+                        inputScanner.next();
+                        continue;
+                    }
+
+                    if (newStock >= 0) {
+                        break;
+                    }
+                    System.out.println("That's not a valid number.");
+                }
+
+                // Update that book's stock
+                DatabaseController.updateBookStock(conn, id, newStock);
+
+                // Print results
+                System.out.println("Book stock update. There are now " + newStock + " copies.");
+                System.out.println("");
+                System.out.println("");
+                System.out.println("Press enter to continue...");
                 inputScanner.nextLine();
                 break;
             }
