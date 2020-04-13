@@ -91,6 +91,53 @@ public class DatabaseController {
     }
 
     /**
+     * Gets book of specific id with its average rating
+     * @param conn  a connection to the database (see this.openConnection)
+     * @param id  the id of the book to fetch
+     * @return a book object (or null if couldn't find)
+     * @throws SQLException
+     */
+    public static Book getBookOfIdWithAvgRating(Connection conn, int id) throws SQLException {
+        // Make a new sql statement
+        PreparedStatement statement = conn.prepareStatement(
+                "select book.bid, book.title, author.name, book.description, book.price, book.pagecount, coalesce(avg_score.average, 0) average from writtenby join " +
+                        "author on writtenby.aid = author.aid join book on writtenby.bid = book.bid " +
+                        "left join (SELECT bid, AVG(score) average FROM rating GROUP BY bid) avg_score on book.bid = avg_score.bid " +
+                        "where book.bid = ?"
+        );
+        statement.setInt(1, id);
+
+        // The book to return
+        Book book = null;
+
+        // Attempt to execute the query
+        try {
+            java.sql.ResultSet results = statement.executeQuery();
+
+            // Convert every returned tuple to an order object and add list
+            while (results.next()) {
+                book = new Book(
+                        results.getInt("bid"),
+                        results.getString("title"),
+                        results.getString("name"),
+                        results.getString("description"),
+                        results.getDouble("price"),
+                        results.getInt("pagecount"),
+                        results.getDouble("average")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching book of specific id with rating. Error code: " + e.getErrorCode() + "  sqlState: " + e.getSQLState());
+            statement.close();
+            return null;
+        }
+
+        // Return list of all books
+        statement.close();
+        return book;
+    }
+
+    /**
      * Gets the number of books in the database
      * @param conn  a connection to the database (see this.openConnection)
      * @return the number of book records in databse
@@ -169,6 +216,40 @@ public class DatabaseController {
         // Return list of all books
         statement.close();
         return allBooks;
+    }
+
+    /**
+     * Check if a book with a certain email id in our database
+     * @param conn  a connection to the database (see this.openConnection)
+     * @param id  the id to check if exists
+     * @return true if book exists, else false
+     * @throws SQLException
+     */
+    public static boolean existsBookWithId(Connection conn, int id) throws SQLException {
+        // Make a new sql statement
+        PreparedStatement statement = conn.prepareStatement("SELECT count(*) FROM writtenby WHERE bid = ?");
+        statement.setInt(1, id);
+
+        // Record the number of users that match said email
+        int count = 0;
+
+        // Attempt to execute the query
+        try {
+            java.sql.ResultSet results = statement.executeQuery();
+
+            // Convert every returned tuple to an order object and add list
+            while (results.next()) {
+                count = results.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching book with specific id. Error code: " + e.getErrorCode() + "  sqlState: " + e.getSQLState());
+            statement.close();
+            return false;
+        }
+
+        // Return list of all orders
+        statement.close();
+        return count > 0;
     }
 
     /** Get a list of every user in database
