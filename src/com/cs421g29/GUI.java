@@ -164,8 +164,8 @@ public class GUI {
 		
 		//result panel
 	
-		resultPanel.add(leftPanel, BorderLayout.BEFORE_LINE_BEGINS);
-		resultPanel.add(rightPanel, BorderLayout.AFTER_LINE_ENDS);
+		resultPanel.add(leftPanel, BorderLayout.NORTH);
+		resultPanel.add(rightPanel, BorderLayout.SOUTH);
 
 		resultPanel.add(result);
 		

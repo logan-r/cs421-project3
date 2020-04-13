@@ -243,8 +243,12 @@ public class GUIHelper {
     		result += "===============================" + System.lineSeparator();
     		result += "Here are some of our books:" + System.lineSeparator();
     		result += printBooksString(displayedBooks);
-    	}	
-    	DatabaseController.closeConnection(conn);
+    		DatabaseController.closeConnection(conn);
+    	}else {
+    		result = "Can't connect to comp421.cs.mcgill.ca";
+    		return result;
+    	}
+    	
     	}catch (SQLException e) {
 		
             System.out.println(e.getMessage());
@@ -313,10 +317,14 @@ public class GUIHelper {
         		result += "===============================" + System.lineSeparator();
         		result += "Here are some of our books:" + System.lineSeparator();
         		result += printBooksString(displayedBooks);
-        	}	
+        		DatabaseController.closeConnection(conn);
+        	}else {
+        		result = "Can't connect to comp421.cs.mcgill.ca";
+        		return result;
+        	}
         	
         	
-        	DatabaseController.closeConnection(conn);
+        	
         }catch (SQLException e) {
     		
             System.out.println(e.getMessage());
@@ -358,11 +366,14 @@ public class GUIHelper {
                 	result += "This user has no book in their shopping cart." + System.lineSeparator();
                 }
 
-        		
-        	}	
+                DatabaseController.closeConnection(conn);
+        	}else {
+        		result = "Can't connect to comp421.cs.mcgill.ca";
+        		return result;
+        	}
         	
         	
-        	DatabaseController.closeConnection(conn);
+        	
         }catch (SQLException e) {
     		
             System.out.println(e.getMessage());
@@ -407,11 +418,14 @@ public class GUIHelper {
   
                 }
         		
-	
-        	}	
+                DatabaseController.closeConnection(conn);
+        	}else {
+        		result = "Can't connect to comp421.cs.mcgill.ca";
+        		return result;
+        	}
         	
         	
-        	DatabaseController.closeConnection(conn);
+        	
         	
         }catch (SQLException e) {
     		
