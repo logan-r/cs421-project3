@@ -273,7 +273,7 @@ public class GUI {
 	
 	
 	private void setPromptsVisible (int[] arr) {
-		
+		result.setText(" ");
 		input1.setVisible(false);
 		in1.setVisible(false);
 		input2.setVisible(false);
